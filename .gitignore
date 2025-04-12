@@ -1,0 +1,28 @@
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+
+# Django-specific
+db.sqlite3
+*.log
+*.pot
+*.py[cod]
+
+# Environment variables / secrets
+.env
+
+# VS Code
+.vscode/
+
+# MacOS system files
+.DS_Store
+
+# Migrations (optional – only if you want to avoid committing them)
+# **Be careful**: don't ignore migrations unless you have a good reason
+# */migrations/
