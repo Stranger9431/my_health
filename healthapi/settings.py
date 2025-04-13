@@ -19,6 +19,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'health-app-mvp.netlify.app',  # Your frontend URL on Netlify
+    'https://health-tracker-gzw8.onrender.com',
     'localhost',                    # For local development
     '127.0.0.1',                    # Local development IP
 ]
