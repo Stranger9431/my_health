@@ -9,11 +9,17 @@ class User(AbstractUser):
     height = models.FloatField(null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=10)
-    pref_diet = models.CharField(max_length=20, null=True)
+    pref_diet = models.CharField(max_length=50, null=True)
     waist_circ = models.FloatField(null=True, blank=True)
     hip_circ = models.FloatField(null=True, blank=True)
-    goal = models.CharField(max_length=50, null=True)
-
+    goal = models.CharField(max_length=100, null=True)
+    activity_level = models.CharField(max_length=20, null=True)
+    
+    email = models.EmailField(unique=True)  # This ensures email is unique in the database
+    # Set email as the primary login field
+    USERNAME_FIELD = 'email'
+    # Optionally define required fields for creating a user via the admin or CLI
+    REQUIRED_FIELDS = ['username']  # username is still needed, but won't be used for login
 
 User = get_user_model()
 

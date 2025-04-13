@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -153,12 +155,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,  # Returns 10 results per page
 }
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",  # React/Vue/Angular frontend running locally
-#     "https://yourfrontenddomain.com",  # Your production frontend
-# ]
-
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://health-app-mvp.netlify.app",  # Your production frontend
+]
 
 
 REST_FRAMEWORK.update({
@@ -171,3 +170,12 @@ REST_FRAMEWORK.update({
         'anon': '10/minute',  # Max 10 requests per minute for non-authenticated users
     }
 })
+
+
+# Default expiration times for tokens
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # Adjust access token lifetime as necessary
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Default refresh token lifetime
+    'ROTATE_REFRESH_TOKENS': False,  # Set to True if you want to rotate refresh tokens
+    'BLACKLIST_AFTER_ROTATION': False,
+}

@@ -6,7 +6,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import UserSerializer, MealSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer
+from datetime import timedelta
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.contrib.auth import authenticate
+
+from .serializers import UserSerializer, MealSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileUpdateSerializer
 
 # Create your views here.
 class UserViewset(viewsets.ModelViewSet):
@@ -44,6 +51,18 @@ class UserProfileView(APIView):
             "username": user.username,
             "email": user.email,
         })
+    
+class UserProfileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]  # Only authenticated users can update their profile
+
+    def put(self, request, *args, **kwargs):
+        user = request.user  # Get the current authenticated user
+        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True)  # Use partial=True to allow updating only the specified fields
+
+        if serializer.is_valid():
+            serializer.save()  # Save the updated user data
+            return Response(serializer.data, status=status.HTTP_200_OK)  # Return the updated user data
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Return errors if the data is invalid
 
 @api_view(["GET"])
 def get_food_list(request):
@@ -110,3 +129,39 @@ def log_meal(request):
     )
 
     return Response(MealSerializer(meal).data, status=201)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        # Get the email and password from the request data
+        email = request.data.get('email')  # Expecting email for login
+        password = request.data.get('password')
+        remember_me = request.data.get('remember_me', False)  # Get the remember_me flag
+        
+        # Default expiration time for access token
+        access_token_lifetime = timedelta(minutes=5) 
+        
+        # Longer expiration for refresh token if "Remember Me" is checked
+        refresh_token_lifetime = timedelta(days=1)  # Default: 1 day
+        if remember_me:
+            refresh_token_lifetime = timedelta(days=30)  # Extend refresh token expiration to 30 days
+
+        # Authenticate user using email
+        user = authenticate(request, username=email, password=password)
+
+        # If user is authenticated, generate tokens
+        if user is not None:
+            # Create JWT access and refresh tokens
+            response = super().post(request, *args, **kwargs)
+            
+            if response.status_code == status.HTTP_200_OK:
+                # Generate custom refresh token with custom expiration time
+                refresh_token = RefreshToken.for_user(user)
+                refresh_token.set_exp(lifetime=refresh_token_lifetime)  # Set custom expiration time for refresh token
+                
+                # Add the refresh token to the response
+                response.data['refresh'] = str(refresh_token)
+            
+            return response
+        else:
+            return Response({'detail': 'Invalid email or password.'}, status=status.HTTP_401_UNAUTHORIZED)
