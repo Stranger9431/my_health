@@ -14,12 +14,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+print("DEBUG is set to:", DEBUG)
+
+
 ALLOWED_HOSTS = [
     'health-app-mvp.netlify.app',  # Your frontend URL on Netlify
-    'https://health-tracker-gzw8.onrender.com',
+    'health-tracker-gzw8.onrender.com',
     'localhost',                    # For local development
     '127.0.0.1',                    # Local development IP
 ]
@@ -135,6 +139,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     "https://health-app-mvp.netlify.app",  # Your production frontend
+    "https://health-tracker-gzw8.onrender.com",
 ]
 
 
