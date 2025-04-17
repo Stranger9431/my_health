@@ -21,7 +21,7 @@ class UserViewset(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 class MealViewset(viewsets.ModelViewSet):
-    queryset = Meal.objects.all()
+    queryset = Meal.objects.all().order_by('id')
     serializer_class = MealSerializer
 
 class ActivityViewset(viewsets.ModelViewSet):
