@@ -1,4 +1,3 @@
-DEBUG is set to: True
 [
 {
   "model": "api.food",
