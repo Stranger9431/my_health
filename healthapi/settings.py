@@ -82,7 +82,7 @@ WSGI_APPLICATION = 'healthapi.wsgi.application'
 # Database
 # Updated to use dj_database_url for production database
 DATABASES = {
-    'default': dj_database_url.config(default=config('DATABASE_URL', cast=str, default='postgres://localhost/healthdb'))
+    'default': dj_database_url.config(default=config('DATABASE_URL'))
 }
 
 
