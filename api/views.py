@@ -12,8 +12,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.contrib.auth import authenticate
-
-from .serializers import UserSerializer, MealSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileUpdateSerializer
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import smart_bytes
+from django.core.mail import send_mail
+from django.conf import settings
+from .serializers import UserSerializer, MealSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
 
 # Create your views here.
 class UserViewset(viewsets.ModelViewSet):
@@ -43,14 +47,12 @@ class RegisterView(generics.CreateAPIView):
         return Response({"message": "User registered successfully"}, status=HTTP_201_CREATED)
     
 class UserProfileView(APIView):
-    permission_classes = [IsAuthenticated]  # Restrict access
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user = request.user
-        return Response({
-            "username": user.username,
-            "email": user.email,
-        })
+        serializer = UserProfileSerializer(request.user)
+        return Response(serializer.data)
+
     
 class UserProfileUpdateView(APIView):
     permission_classes = [IsAuthenticated]  # Only authenticated users can update their profile
@@ -165,3 +167,38 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             return response
         else:
             return Response({'detail': 'Invalid email or password.'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+class RequestPasswordResetView(generics.GenericAPIView):
+    serializer_class = PasswordResetRequestSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+        user = User.objects.get(email=email)
+        uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
+        token = PasswordResetTokenGenerator().make_token(user)
+
+        # Construct reset URL (you'd ideally have a frontend to handle this)
+        reset_url = f"{settings.FRONTEND_BASE_URL}/reset-password?uidb64={uidb64}&token={token}"
+
+        send_mail(
+            subject="Reset Your Password",
+            message=f"Click the link to reset your password: {reset_url}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
+        return Response({"message": "We’ve emailed you instructions for setting your password."}, status=status.HTTP_200_OK)
+
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    serializer_class = SetNewPasswordSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)

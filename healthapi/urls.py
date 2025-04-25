@@ -24,6 +24,8 @@ def custom_api_root(request, format=None):
         'log_meal': reverse('log_meal', request=request, format=format),
         'token': reverse('token_obtain_pair', request=request, format=format),
         'token_refresh': reverse('token_refresh', request=request, format=format),
+        'password_reset_request': reverse('password_reset_request', request=request, format=format),
+        'password_reset_confirm': reverse('password_reset_confirm', request=request, format=format),
         'health_metrics': reverse('health:get_health_metrics', request=request, format=format),
     })
 

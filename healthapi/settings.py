@@ -141,6 +141,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
+FRONTEND_BASE_URL = "https://health-app-mvp.netlify.app"
+
 
 REST_FRAMEWORK.update({
     'DEFAULT_THROTTLE_CLASSES': [
@@ -148,16 +150,25 @@ REST_FRAMEWORK.update({
         'rest_framework.throttling.AnonRateThrottle',  # Limit for guests
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'user': '100/hour',  # Max 100 requests per hour for authenticated users
-        'anon': '10/minute',  # Max 10 requests per minute for non-authenticated users
+        'user': '1000/hour',  # Max 1000 requests per hour for authenticated users
+        'anon': '100/minute',  # Max 10 requests per minute for non-authenticated users
     }
 })
 
 
 # Default expiration times for tokens
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # Adjust access token lifetime as necessary
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Default refresh token lifetime
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=3),  # Adjust access token lifetime as necessary
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Default refresh token lifetime
     'ROTATE_REFRESH_TOKENS': False,  # Set to True if you want to rotate refresh tokens
     'BLACKLIST_AFTER_ROTATION': False,
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')  # Your email address
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # App password or actual password (if less secure apps are enabled)
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import FileExtensionValidator
 
 
 # Create your models here.
@@ -14,6 +15,11 @@ class User(AbstractUser):
     hip_circ = models.FloatField(null=True, blank=True)
     goal = models.CharField(max_length=100, null=True)
     activity_level = models.CharField(max_length=20, null=True)
+    image = models.ImageField(
+        upload_to='profile_pics/',
+        null=True,
+        blank=True,
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])])
     
     email = models.EmailField(unique=True)  # This ensures email is unique in the database
     # Set email as the primary login field
