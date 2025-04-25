@@ -150,15 +150,15 @@ REST_FRAMEWORK.update({
         'rest_framework.throttling.AnonRateThrottle',  # Limit for guests
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'user': '1000/hour',  # Max 1000 requests per hour for authenticated users
-        'anon': '100/minute',  # Max 10 requests per minute for non-authenticated users
+        'user': '10000/hour',  # Max 10000 requests per hour for authenticated users
+        'anon': '1000/minute',  # Max 1000 requests per minute for non-authenticated users
     }
 })
 
 
 # Default expiration times for tokens
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=3),  # Adjust access token lifetime as necessary
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=7),  # Adjust access token lifetime as necessary
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),  # Default refresh token lifetime
     'ROTATE_REFRESH_TOKENS': False,  # Set to True if you want to rotate refresh tokens
     'BLACKLIST_AFTER_ROTATION': False,
