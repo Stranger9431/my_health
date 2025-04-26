@@ -86,4 +86,4 @@ class Tip(models.Model):
     text = models.TextField()
 
     def __str__(self):
-        return self.content[:50]  # Short preview
+        return self.text[:50]  # Short preview
