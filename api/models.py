@@ -83,7 +83,7 @@ class Progress(models.Model):
 
 
 class Tip(models.Model):
-    content = models.TextField()
+    text = models.TextField()
 
     def __str__(self):
         return self.content[:50]  # Short preview
