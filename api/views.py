@@ -58,13 +58,18 @@ class UserProfileUpdateView(APIView):
     permission_classes = [IsAuthenticated]  # Only authenticated users can update their profile
 
     def put(self, request, *args, **kwargs):
-        user = request.user  # Get the current authenticated user
-        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True)  # Use partial=True to allow updating only the specified fields
+        return self._update(request)
 
+    def patch(self, request, *args, **kwargs):
+        return self._update(request)
+
+    def _update(self, request):
+        user = request.user
+        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()  # Save the updated user data
-            return Response(serializer.data, status=status.HTTP_200_OK)  # Return the updated user data
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Return errors if the data is invalid
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])
 def get_food_list(request):
