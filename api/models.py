@@ -80,3 +80,10 @@ class Progress(models.Model):
     weight = models.FloatField()
     bmi = models.FloatField()
     date_logged = models.DateTimeField(auto_now_add=True)
+
+
+class Tip(models.Model):
+    content = models.TextField()
+
+    def __str__(self):
+        return self.content[:50]  # Short preview

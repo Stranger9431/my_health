@@ -27,6 +27,7 @@ def custom_api_root(request, format=None):
         'password_reset_request': reverse('password_reset_request', request=request, format=format),
         'password_reset_confirm': reverse('password_reset_confirm', request=request, format=format),
         'health_metrics': reverse('health:get_health_metrics', request=request, format=format),
+        'tips': reverse('get-all-tips', request=request, format=format),
     })
 
 # DRF router for viewsets

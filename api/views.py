@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
 from rest_framework.status import HTTP_201_CREATED
-from .models import User, Meal, Activity, Progress, Food
+from .models import User, Meal, Activity, Progress, Food, Tip
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -17,7 +17,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import smart_bytes
 from django.core.mail import send_mail
 from django.conf import settings
-from .serializers import UserSerializer, MealSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
+from .serializers import UserSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
 
 # Create your views here.
 class UserViewset(viewsets.ModelViewSet):
@@ -207,3 +207,10 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+    
+
+@api_view(["GET"])
+def get_all_tips(request):
+    tips = Tip.objects.all()
+    serializer = TipSerializer(tips, many=True)
+    return Response(serializer.data)

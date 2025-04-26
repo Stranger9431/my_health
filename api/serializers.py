@@ -2,7 +2,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import serializers
-from .models import User, Meal, Progress, Activity, Food
+from .models import User, Meal, Progress, Activity, Food, Tip
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -119,3 +119,9 @@ class SetNewPasswordSerializer(serializers.Serializer):
             return user
         except Exception as e:
             raise serializers.ValidationError("The reset link is invalid.", code='invalid_link')
+        
+
+class TipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tip
+        fields = ['id', 'content']
