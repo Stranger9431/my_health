@@ -75,7 +75,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "daily_water_goal",
             "weekly_activity_goal",
             "weight_goal",
-            "daily_steps_goal"
+            "daily_steps_goal",
+            "image"
         ]
 
     
