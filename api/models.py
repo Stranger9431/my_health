@@ -22,6 +22,10 @@ class User(AbstractUser):
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])])
     
     email = models.EmailField(unique=True)  # This ensures email is unique in the database
+    daily_water_goal = models.FloatField(null=True, blank=True)  # liters
+    weekly_activity_goal = models.IntegerField(null=True, blank=True)  # days
+    weight_goal = models.FloatField(null=True, blank=True)  # kg
+    daily_steps_goal = models.IntegerField(null=True, blank=True)  # steps
     # Set email as the primary login field
     USERNAME_FIELD = 'email'
     # Optionally define required fields for creating a user via the admin or CLI

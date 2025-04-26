@@ -10,7 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'weight', 'height', 'age',
             'gender', 'pref_diet', 'waist_circ', 'hip_circ', 'goal',
-            'activity_level', 'image'
+            'activity_level', 'image',
+            'daily_water_goal', 'weekly_activity_goal', 'weight_goal', 'daily_steps_goal'
         ]
 
 class MealSerializer(serializers.ModelSerializer):
@@ -70,14 +71,35 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "waist_circ",
             "hip_circ",
             "goal",
-            "activity_level"
+            "activity_level",
+            "daily_water_goal",
+            "weekly_activity_goal",
+            "weight_goal",
+            "daily_steps_goal"
         ]
 
     
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['age', 'weight', 'height', 'gender', 'pref_diet', 'waist_circ', 'hip_circ', 'goal', 'image']  # Fields that are updatable
+        fields = ['age', 'weight', 'height', 'gender', 'pref_diet', 'waist_circ', 'hip_circ', 'goal', 'image',
+                  'daily_water_goal', 'weekly_activity_goal', 'weight_goal', 'daily_steps_goal'  # NEW
+        ]
+
+    def validate_daily_water_goal(self, value):
+        if value is not None and value > 5:
+            raise serializers.ValidationError("Daily water goal cannot exceed 5 liters.")
+        return value
+
+    def validate_weekly_activity_goal(self, value):
+        if value is not None and value > 7:
+            raise serializers.ValidationError("Weekly activity goal cannot exceed 7 days.")
+        return value
+
+    def validate_daily_steps_goal(self, value):
+        if value is not None and value > 10000:
+            raise serializers.ValidationError("Daily steps goal cannot exceed 10,000 steps.")
+        return value
 
     def update(self, instance, validated_data):
         # Update the instance with the validated data and return it
