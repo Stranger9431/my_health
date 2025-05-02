@@ -86,8 +86,31 @@ class Progress(models.Model):
     date_logged = models.DateTimeField(auto_now_add=True)
 
 
+class ActivityLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    activity_type = models.CharField(max_length=100)
+    duration_minutes = models.PositiveIntegerField()
+    calories_burned = models.FloatField(null=True, blank=True)
+    date = models.DateField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)  # NEW
+
+    def __str__(self):
+        return f"{self.user.email} - {self.activity_type} on {self.date} at {self.time}"
+
+class StepLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    steps = models.PositiveIntegerField()
+    date = models.DateField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)  # NEW
+
+    def __str__(self):
+        return f"{self.user.email} - {self.steps} steps on {self.date} at {self.time}"
+
+
+
 class Tip(models.Model):
     content = models.TextField()
 
     def __str__(self):
         return self.content[:50]  # Short preview
+    

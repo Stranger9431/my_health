@@ -27,13 +27,17 @@ def custom_api_root(request, format=None):
         'password_reset_request': reverse('password_reset_request', request=request, format=format),
         'password_reset_confirm': reverse('password_reset_confirm', request=request, format=format),
         'health_metrics': reverse('health:get_health_metrics', request=request, format=format),
+        'log_activity': reverse('log_activity', request=request, format=format),
+        'log_steps': reverse('log_steps', request=request, format=format),
+        'activity_history': reverse('activity_history', request=request, format=format),
+        'steps_history': reverse('steps_history', request=request, format=format),
         'tips': reverse('get-all-tips', request=request, format=format),
     })
 
 # DRF router for viewsets
 router = DefaultRouter()
 router.register('users', UserViewset)
-router.register('meals', MealViewset)
+router.register('meals', MealViewset, basename='meal')
 router.register('activities', ActivityViewset)
 router.register('progress', ProgressViewset)
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, permissions
 from rest_framework.status import HTTP_201_CREATED
-from .models import User, Meal, Activity, Progress, Food, Tip
+from .models import User, Meal, Activity, Progress, Food, Tip, ActivityLog, StepLog
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -17,7 +17,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import smart_bytes
 from django.core.mail import send_mail
 from django.conf import settings
-from .serializers import UserSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
+from .serializers import UserSerializer, ActivityLogSerializer, StepLogSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
 
 # Create your views here.
 class UserViewset(viewsets.ModelViewSet):
@@ -25,8 +25,13 @@ class UserViewset(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 class MealViewset(viewsets.ModelViewSet):
-    queryset = Meal.objects.all().order_by('id')
+    queryset = Meal.objects.all()
     serializer_class = MealSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Meal.objects.filter(user=self.request.user).order_by('-timestamp')
+
 
 class ActivityViewset(viewsets.ModelViewSet):
     queryset = Activity.objects.all()
@@ -65,7 +70,7 @@ class UserProfileUpdateView(APIView):
 
     def _update(self, request):
         user = request.user
-        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True)
+        serializer = UserProfileUpdateSerializer(user, data=request.data, files=request.FILES, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -208,6 +213,35 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
     
+
+class LogActivityView(generics.CreateAPIView):
+    serializer_class = ActivityLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class LogStepsView(generics.CreateAPIView):
+    serializer_class = StepLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class ActivityHistoryView(generics.ListAPIView):
+    serializer_class = ActivityLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ActivityLog.objects.filter(user=self.request.user).order_by('-date', '-time')
+
+class StepHistoryView(generics.ListAPIView):
+    serializer_class = StepLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return StepLog.objects.filter(user=self.request.user).order_by('-date', '-time')
+
 
 @api_view(["GET"])
 def get_all_tips(request):
