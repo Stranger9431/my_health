@@ -43,9 +43,9 @@ class Food(models.Model):
     calcium = models.FloatField(null=True, blank=True)
     iron = models.FloatField(null=True, blank=True)
     magnesium = models.FloatField(null=True, blank=True)
-    portion_small = models.FloatField(default=50)
-    portion_medium = models.FloatField(default=100)
-    portion_large = models.FloatField(default=150) 
+    portion_small = models.FloatField(default=50, null=True, blank=True)
+    portion_medium = models.FloatField(default=100, null=True, blank=True)
+    portion_large = models.FloatField(default=150, null=True, blank=True) 
 
     def __str__(self):
         return self.name
@@ -105,6 +105,12 @@ class StepLog(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.steps} steps on {self.date} at {self.time}"
+
+
+class WaterLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.FloatField()  # in ml or liters
+    date_logged = models.DateField(auto_now_add=True)
 
 
 

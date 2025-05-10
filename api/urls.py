@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, UserProfileUpdateView, LogActivityView, LogStepsView, ActivityHistoryView, StepHistoryView, RequestPasswordResetView, PasswordResetConfirmView, UserProfileView, get_food_details, get_food_list, log_meal, get_all_tips
+from .views import RegisterView, log_water, meal_summary, create_custom_food, UserProfileUpdateView, LogActivityView, LogStepsView, ActivityHistoryView, StepHistoryView, RequestPasswordResetView, PasswordResetConfirmView, UserProfileView, get_food_details, get_food_list, log_meal, get_all_tips
 from .views import CustomTokenObtainPairView  # Custom view for both email login and remember me functionality
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -17,6 +17,11 @@ urlpatterns = [
     path("steps/log/", LogStepsView.as_view(), name="log_steps"),
     path("activity/history/", ActivityHistoryView.as_view(), name="activity_history"),
     path("steps/history/", StepHistoryView.as_view(), name="steps_history"),
+    path("food/custom/", create_custom_food, name="create_custom_food"),
+    path("water/log/", log_water, name="log_water"),
+    path("meals/summary/", meal_summary, name="meal_summary"),
+
+
 
     # Custom login with email + Remember Me functionality
     path("token/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),  # This will handle both

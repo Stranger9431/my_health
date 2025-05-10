@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.utils.timezone import now
 from rest_framework import viewsets, generics, permissions
 from rest_framework.status import HTTP_201_CREATED
 from .models import User, Meal, Activity, Progress, Food, Tip, ActivityLog, StepLog
@@ -17,7 +18,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import smart_bytes
 from django.core.mail import send_mail
 from django.conf import settings
-from .serializers import UserSerializer, ActivityLogSerializer, StepLogSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
+from django_filters.rest_framework import DjangoFilterBackend
+from .serializers import UserSerializer, WaterLogSerializer, CustomFoodSerializer, ActivityLogSerializer, StepLogSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
 
 # Create your views here.
 class UserViewset(viewsets.ModelViewSet):
@@ -25,12 +27,13 @@ class UserViewset(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 class MealViewset(viewsets.ModelViewSet):
-    queryset = Meal.objects.all()
     serializer_class = MealSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['timestamp']
 
     def get_queryset(self):
-        return Meal.objects.filter(user=self.request.user).order_by('-timestamp')
+        return Meal.objects.filter(user=self.request.user)
 
 
 class ActivityViewset(viewsets.ModelViewSet):
@@ -40,6 +43,50 @@ class ActivityViewset(viewsets.ModelViewSet):
 class ProgressViewset(viewsets.ModelViewSet):
     queryset = Progress.objects.all()
     serializer_class = ProgressSerializer
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def log_water(request):
+    serializer = WaterLogSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_custom_food(request):
+    required_fields = ['name', 'energy_kcal', 'protein', 'fat', 'carbohydrates']
+    for field in required_fields:
+        if field not in request.data:
+            return Response({field: "This field is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    serializer = CustomFoodSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def meal_summary(request):
+    date = request.GET.get('date', now().date())
+    meals = Meal.objects.filter(user=request.user, timestamp__date=date)
+
+    total_calories = sum(meal.calories for meal in meals)
+    total_protein = sum(meal.protein or 0 for meal in meals)
+    total_carbs = sum(meal.carbohydrates or 0 for meal in meals)
+    total_fat = sum(meal.fat or 0 for meal in meals)
+
+    return Response({
+        "date": date,
+        "total_calories": total_calories,
+        "total_protein": total_protein,
+        "total_carbohydrates": total_carbs,
+        "total_fat": total_fat
+    })
+
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -69,11 +116,24 @@ class UserProfileUpdateView(APIView):
         return self._update(request)
 
     def _update(self, request):
+        # Get the authenticated user
         user = request.user
+
+        # Initialize the serializer with the user instance, request data, and any uploaded files
         serializer = UserProfileUpdateSerializer(user, data=request.data, files=request.FILES, partial=True)
+
+        # Log the received data and check if the serializer is valid
+        print("Received data:", request.data)  # Debugging line
+        print("Is serializer valid?", serializer.is_valid())  # Debugging line
+
         if serializer.is_valid():
+            # Save the data
             serializer.save()
+            # Return the updated user profile data
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        # If validation fails, return the error messages
+        print("Serializer errors:", serializer.errors)  # Debugging line
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])

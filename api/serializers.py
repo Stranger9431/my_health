@@ -2,7 +2,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import serializers
-from .models import User, Meal, Progress, Activity, Food, Tip, ActivityLog, StepLog
+from .models import User, WaterLog, Meal, Progress, Activity, Food, Tip, ActivityLog, StepLog
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,6 +23,22 @@ class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = Food
         fields = "__all__"
+
+class CustomFoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Food
+        fields = ['name', 'energy_kcal', 'protein', 'fat', 'carbohydrates']
+
+    def validate_name(self, value):
+        if Food.objects.filter(name__iexact=value).exists():
+            raise serializers.ValidationError("A food with this name already exists.")
+        return value
+    
+class WaterLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WaterLog
+        fields = ['amount', 'date_logged']
+
 
 class ActivitySerializer(serializers.ModelSerializer):
     class Meta:

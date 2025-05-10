@@ -21,18 +21,22 @@ def custom_api_root(request, format=None):
         'profile': reverse('profile', request=request, format=format),
         'update_profile': reverse('profile_update', request=request, format=format),
         'food_list': reverse('get_food_list', request=request, format=format),
+        'create_custom_food': reverse('create_custom_food', request=request, format=format),
         'log_meal': reverse('log_meal', request=request, format=format),
-        'token': reverse('token_obtain_pair', request=request, format=format),
-        'token_refresh': reverse('token_refresh', request=request, format=format),
-        'password_reset_request': reverse('password_reset_request', request=request, format=format),
-        'password_reset_confirm': reverse('password_reset_confirm', request=request, format=format),
-        'health_metrics': reverse('health:get_health_metrics', request=request, format=format),
+        'meal_summary': reverse('meal_summary', request=request, format=format),
+        'log_water': reverse('log_water', request=request, format=format),
         'log_activity': reverse('log_activity', request=request, format=format),
         'log_steps': reverse('log_steps', request=request, format=format),
         'activity_history': reverse('activity_history', request=request, format=format),
         'steps_history': reverse('steps_history', request=request, format=format),
         'tips': reverse('get-all-tips', request=request, format=format),
+        'password_reset_request': reverse('password_reset_request', request=request, format=format),
+        'password_reset_confirm': reverse('password_reset_confirm', request=request, format=format),
+        'token': reverse('token_obtain_pair', request=request, format=format),
+        'token_refresh': reverse('token_refresh', request=request, format=format),
+        'health_metrics': reverse('health:get_health_metrics', request=request, format=format),
     })
+
 
 # DRF router for viewsets
 router = DefaultRouter()
