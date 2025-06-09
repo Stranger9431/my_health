@@ -24,6 +24,8 @@ def custom_api_root(request, format=None):
         'create_custom_food': reverse('create_custom_food', request=request, format=format),
         'log_meal': reverse('log_meal', request=request, format=format),
         'meal_summary': reverse('meal_summary', request=request, format=format),
+        'meal_update': reverse('meal_update', request=request, format=format),
+        'meal_delete': reverse('meal_delete', request=request, format=format),
         'log_water': reverse('log_water', request=request, format=format),
         'log_activity': reverse('log_activity', request=request, format=format),
         'log_steps': reverse('log_steps', request=request, format=format),

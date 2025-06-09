@@ -19,6 +19,7 @@ from django.utils.encoding import smart_bytes
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.dateparse import parse_date
+from django.shortcuts import get_object_or_404
 from datetime import datetime
 from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import UserSerializer, WaterLogSerializer, WaterHistorySerializer, WaterEntrySerializer, CustomFoodSerializer, ActivityLogSerializer, StepLogSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
@@ -129,6 +130,27 @@ def meal_summary(request):
         "total_carbohydrates": total_carbs,
         "total_fat": total_fat
     })
+
+class MealUpdateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def put(self, request, meal_id):
+        meal = get_object_or_404(Meal, id=meal_id, user=request.user)
+
+        serializer = MealSerializer(meal, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Meal updated successfully.', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+class MealDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, meal_id):
+        meal = get_object_or_404(Meal, id=meal_id, user=request.user)
+        meal.delete()
+        return Response({'message': 'Meal deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class RegisterView(generics.CreateAPIView):
