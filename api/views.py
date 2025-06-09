@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.utils.timezone import now
 from rest_framework import viewsets, generics, permissions
 from rest_framework.status import HTTP_201_CREATED
-from .models import User, Meal, Activity, Progress, Food, Tip, ActivityLog, StepLog
+from .models import User, Meal, Activity, Progress, Food, Tip, ActivityLog, StepLog, WaterLog
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -18,8 +18,10 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import smart_bytes
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils.dateparse import parse_date
+from datetime import datetime
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import UserSerializer, WaterLogSerializer, CustomFoodSerializer, ActivityLogSerializer, StepLogSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
+from .serializers import UserSerializer, WaterLogSerializer, WaterHistorySerializer, WaterEntrySerializer, CustomFoodSerializer, ActivityLogSerializer, StepLogSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
 
 # Create your views here.
 class UserViewset(viewsets.ModelViewSet):
@@ -52,6 +54,47 @@ def log_water(request):
         serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def water_history(request):
+    user = request.user
+    date_str = request.GET.get('date')
+    start_date_str = request.GET.get('start_date')
+    end_date_str = request.GET.get('end_date')
+
+    if date_str:
+        date = parse_date(date_str)
+        logs = WaterLog.objects.filter(user=user, date_logged=date)
+        total = sum(log.amount for log in logs)
+        response_data = {
+            "date": date,
+            "total_water": total,
+            "target_water": user.daily_water_goal or 2.5,
+            "entries": WaterEntrySerializer(logs, many=True).data
+        }
+        return Response(response_data)
+
+    elif start_date_str and end_date_str:
+        start_date = parse_date(start_date_str)
+        end_date = parse_date(end_date_str)
+        history = []
+        current_date = start_date
+        while current_date <= end_date:
+            logs = WaterLog.objects.filter(user=user, date_logged=current_date)
+            total = sum(log.amount for log in logs)
+            history.append({
+                "date": current_date,
+                "total_water": total,
+                "target_water": user.daily_water_goal or 2.5,
+                "entries": WaterEntrySerializer(logs, many=True).data
+            })
+            current_date += timedelta(days=1)
+        return Response(history)
+
+    else:
+        return Response({"error": "Provide either 'date' or both 'start_date' and 'end_date' in YYYY-MM-DD format."}, status=400)
 
 
 @api_view(['POST'])

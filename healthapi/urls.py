@@ -27,6 +27,7 @@ def custom_api_root(request, format=None):
         'log_water': reverse('log_water', request=request, format=format),
         'log_activity': reverse('log_activity', request=request, format=format),
         'log_steps': reverse('log_steps', request=request, format=format),
+        'water_history': reverse('water_history', request=request, format=format),
         'activity_history': reverse('activity_history', request=request, format=format),
         'steps_history': reverse('steps_history', request=request, format=format),
         'tips': reverse('get-all-tips', request=request, format=format),

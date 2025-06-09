@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
 
@@ -109,8 +110,10 @@ class StepLog(models.Model):
 
 class WaterLog(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    amount = models.FloatField()  # in ml or liters
+    amount = models.FloatField()
+    timestamp = models.DateTimeField(default=timezone.now)
     date_logged = models.DateField(auto_now_add=True)
+
 
 
 

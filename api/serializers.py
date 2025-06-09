@@ -39,6 +39,18 @@ class WaterLogSerializer(serializers.ModelSerializer):
         model = WaterLog
         fields = ['amount', 'date_logged']
 
+class WaterEntrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WaterLog
+        fields = ['id', 'amount', 'timestamp']
+
+
+class WaterHistorySerializer(serializers.Serializer):
+    date = serializers.DateField()
+    total_water = serializers.FloatField()
+    target_water = serializers.FloatField()
+    entries = WaterEntrySerializer(many=True)
+
 
 class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
