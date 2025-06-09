@@ -26,6 +26,7 @@ class User(AbstractUser):
     daily_water_goal = models.FloatField(null=True, blank=True)  # liters
     weekly_activity_goal = models.IntegerField(null=True, blank=True)  # days
     weight_goal = models.FloatField(null=True, blank=True)  # kg
+    target_daily_calories = models.PositiveIntegerField(null=True, blank=True)
     daily_steps_goal = models.IntegerField(null=True, blank=True)  # steps
     # Set email as the primary login field
     USERNAME_FIELD = 'email'
