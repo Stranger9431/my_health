@@ -115,8 +115,15 @@ def create_custom_food(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def meal_summary(request):
-    date = request.GET.get('date', now().date())
-    meals = Meal.objects.filter(user=request.user, timestamp__date=date)
+    date_str = request.GET.get('date')
+    if date_str:
+        parsed_date = parse_date(date_str)
+        if not parsed_date:
+            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=400)
+    else:
+        parsed_date = now().date()
+
+    meals = Meal.objects.filter(user=request.user, timestamp__date=parsed_date)
 
     total_calories = sum(meal.calories for meal in meals)
     total_protein = sum(meal.protein or 0 for meal in meals)
@@ -124,7 +131,7 @@ def meal_summary(request):
     total_fat = sum(meal.fat or 0 for meal in meals)
 
     return Response({
-        "date": date,
+        "date": parsed_date,
         "total_calories": total_calories,
         "total_protein": total_protein,
         "total_carbohydrates": total_carbs,
@@ -185,7 +192,7 @@ class UserProfileUpdateView(APIView):
         user = request.user
 
         # Initialize the serializer with the user instance, request data, and any uploaded files
-        serializer = UserProfileUpdateSerializer(user, data=request.data, files=request.FILES, partial=True)
+        serializer = UserProfileUpdateSerializer(user, data=request.data, partial=True)
 
         # Log the received data and check if the serializer is valid
         print("Received data:", request.data)  # Debugging line
