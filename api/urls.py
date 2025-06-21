@@ -10,7 +10,7 @@ urlpatterns = [
     path('profile/update/', UserProfileUpdateView.as_view(), name='profile_update'),
     path("password-reset/request/", RequestPasswordResetView.as_view(), name="password_reset_request"),
     path("password-reset/confirm/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
-    # path("create-superuser-temp-url/", create_superuser_view),
+    path("create-superuser-temp-url/", create_superuser_view),
     path("tips/", get_all_tips, name="get-all-tips"),
     path("food/", get_food_list, name="get_food_list"),
     path("food/<int:food_id>/<str:portion_size>/", get_food_details, name="get_food_details"),

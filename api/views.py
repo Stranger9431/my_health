@@ -116,18 +116,18 @@ def create_custom_food(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @csrf_exempt
-# def create_superuser_view(request):
-#     User = get_user_model()
-#     if not User.objects.filter(username='admin').exists():
-#         User.objects.create_superuser(
-#             username='stranger',
-#             email='stranger@example.com',
-#             password='TobiPass123!'
-#         )
-#         return JsonResponse({"message": "Superuser created"})
-#     else:
-#         return JsonResponse({"message": "Superuser already exists"})
+@csrf_exempt
+def create_superuser_view(request):
+    User = get_user_model()
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser(
+            username='stranger',
+            email='stranger@example.com',
+            password='TobiPass123!'
+        )
+        return JsonResponse({"message": "Superuser created"})
+    else:
+        return JsonResponse({"message": "Superuser already exists"})
 
 
 @api_view(['GET'])
