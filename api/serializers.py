@@ -105,6 +105,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "daily_water_goal",
             "weekly_activity_goal",
             "weight_goal",
+            "target_daily_calories",
             "daily_steps_goal",
             "image"
         ]
@@ -113,7 +114,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['age', 'weight', 'height', 'gender', 'pref_diet', 'waist_circ', 'hip_circ', 'goal', 'image',
+        fields = ['username', 'age', 'weight', 'height', 'gender', 'pref_diet', 'waist_circ', 'hip_circ', 'goal', 'image',
                   'daily_water_goal', 'weekly_activity_goal', 'target_daily_calories', 'weight_goal', 'daily_steps_goal'  # NEW
         ]
 
