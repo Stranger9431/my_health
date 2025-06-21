@@ -20,9 +20,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.dateparse import parse_date
 from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import UserSerializer, WaterLogSerializer, WaterHistorySerializer, WaterEntrySerializer, CustomFoodSerializer, ActivityLogSerializer, StepLogSerializer, MealSerializer, TipSerializer, PasswordResetRequestSerializer, SetNewPasswordSerializer, ActivitySerializer, ProgressSerializer, RegisterSerializer, FoodSerializer, UserProfileSerializer, UserProfileUpdateSerializer
@@ -114,20 +111,6 @@ def create_custom_food(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# @csrf_exempt
-# def create_superuser_view(request):
-#     User = get_user_model()
-#     if not User.objects.filter(username='admin').exists():
-#         User.objects.create_superuser(
-#             username='stranger',
-#             email='stranger@example.com',
-#             password='TobiPass123!'
-#         )
-#         return JsonResponse({"message": "Superuser created"})
-#     else:
-#         return JsonResponse({"message": "Superuser already exists"})
 
 
 @api_view(['GET'])

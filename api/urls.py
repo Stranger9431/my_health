@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import RegisterView, MealDeleteView, MealUpdateView, water_history, log_water, meal_summary, create_custom_food, UserProfileUpdateView, LogActivityView, LogStepsView, ActivityHistoryView, StepHistoryView, RequestPasswordResetView, PasswordResetConfirmView, UserProfileView, get_food_details, get_food_list, log_meal, get_all_tips
-# from .views import create_superuser_view
 from .views import CustomTokenObtainPairView  # Custom view for both email login and remember me functionality
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -10,7 +9,6 @@ urlpatterns = [
     path('profile/update/', UserProfileUpdateView.as_view(), name='profile_update'),
     path("password-reset/request/", RequestPasswordResetView.as_view(), name="password_reset_request"),
     path("password-reset/confirm/", PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
-    # path("create-superuser-temp-url/", create_superuser_view),
     path("tips/", get_all_tips, name="get-all-tips"),
     path("food/", get_food_list, name="get_food_list"),
     path("food/<int:food_id>/<str:portion_size>/", get_food_details, name="get_food_details"),
