@@ -70,7 +70,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = [
             'username', 'email', 'password', 'password2',
             'weight', 'height', 'age', 'gender', 'pref_diet',
-            'waist_circ', 'hip_circ', 'goal', 'activity_level'
+            'waist_circ', 'hip_circ', 'goal', 'activity_level',
+            'daily_water_goal', 'weekly_activity_goal',
+            'weight_goal', 'daily_steps_goal', 'target_daily_calories',
         ]
         extra_kwargs = {'password': {'write_only': True}}
 
