@@ -137,12 +137,12 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = [
-    "https://health-app-mvp.netlify.app",  # Your production frontend
+    "https://viva-health.netlify.app",  # Your production frontend
     "https://health-tracker-gzw8.onrender.com",
     "http://localhost:5173",
 ]
 
-FRONTEND_BASE_URL = "https://health-app-mvp.netlify.app"
+FRONTEND_BASE_URL = "https://viva-health.netlify.app"
 
 
 REST_FRAMEWORK.update({
